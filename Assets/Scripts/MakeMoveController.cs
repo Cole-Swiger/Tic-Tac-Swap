@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class MakeMoveController : MonoBehaviour
 {
-    public static bool isActive = false;
+    GameManager gameManager;
+    //Only allow a move to be played if active is true.
+    public bool isActive = false;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -18,21 +20,16 @@ public class MakeMoveController : MonoBehaviour
         
     }
 
+    //Call the MakeMove method from GameManager if active. Otherwise warn the player.
     private void OnMouseDown()
     {
         if (isActive)
         {
-            Debug.Log("Button Pressed");
-            TileController.PlaceLetter();
+            gameManager.MakeMove();
         }
         else
         {
             Debug.Log("Please select a tile before making a move");
         }
-    }
-
-    public static void SetIsActive(bool active)
-    {
-        isActive = active;
     }
 }

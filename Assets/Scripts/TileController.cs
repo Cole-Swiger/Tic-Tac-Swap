@@ -4,82 +4,106 @@ using UnityEngine;
 
 public class TileController : MonoBehaviour
 {
+    //references
     private SpriteRenderer sprite;
+    GameManager gameManager;
+
+    //Tile colors
     private Color highlightColor = Color.cyan;
     private Color regularColor = Color.white;
+    private Color unplayableColor = Color.gray;
+
     //Only 1 tile should be selected at a time (Unless player is swapping, then max is 2)
+    //total and max selected, and the list of selected tiles will be same for all instances.
+    public bool isSelectable = true;
     public bool selected = false;
-    public static float totalSelected = 0;
-    public static float maxSelected = 1;
-    private static List<GameObject> selectedTileList = new List<GameObject>();
+    public bool hasBeenSwapped = false;
+    public static int maxSelected = 1;
+    public static List<GameObject> selectedTileList = new List<GameObject>();
 
     // Start is called before the first frame update
     void Start()
     {
-        //Set Sprite renderer
+        //Set Sprite renderer and GameManager
         sprite = gameObject.GetComponent<SpriteRenderer>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
     void Update()
     {
-    
+        //Set tile color
+        if (selected)
+        {
+            GetComponent<SpriteRenderer>().color = highlightColor;
+        }
+        else if (hasBeenSwapped)
+        {
+            GetComponent<SpriteRenderer>().color = unplayableColor;
+        }
+        else
+        {
+            GetComponent<SpriteRenderer>().color = regularColor;
+        }
     }
 
     //Select and Highlight current tile and deselect previous tile if one has been selected.
-    //If swapping, 2 tiles can be selected.
+    //If swapping, 2 tiles can be selected before one is deselected.
     private void OnMouseDown()
     {
+        if (!isSelectable)
+        {
+            return;
+        }
         selected = !selected;
+        maxSelected = gameManager.GetMaxSelected();
 
+        //If clicked tile wasn't selected before, add to list and highlight it. Otherwise deselect it.
         if (selected)
         {
             AddTileList();
 
+            //Deselect oldest selected tile if over max selected.
             if (selectedTileList.Count > maxSelected)
             {
-                DeselectOtherTile();
+                GameObject objectToDeselect = selectedTileList[0];
+                ResetSelected(objectToDeselect);
             }
 
             sprite.color = highlightColor;
         }
         else
         {
-            sprite.color = regularColor;
-            selectedTileList.Remove(gameObject);
-            totalSelected = selectedTileList.Count;
+            ResetSelected(gameObject);
         }
-
-        if (totalSelected > 0)
-        {
-            MakeMoveController.SetIsActive(true);
-        }
-        else
-        {
-            MakeMoveController.SetIsActive(false);
-        }
+        gameManager.SetMakeMoveActive();
     }
 
+    //Add a tile to the end of the selected tile list and update total.
     private void AddTileList()
     {
         selectedTileList.Add(gameObject);
-        totalSelected = selectedTileList.Count;
+        gameManager.totalTilesSelected = selectedTileList.Count;
     }
 
-    private void DeselectOtherTile()
+    //Deslect all selected tiles
+    public static void ResetAllSelected()
     {
-        //Oldest Selected tile will be at begenning of list
-        GameObject objectToDeselect = selectedTileList[0];
-        objectToDeselect.GetComponent<SpriteRenderer>().color = regularColor;
-        objectToDeselect.GetComponent<TileController>().selected = false;
-        selectedTileList.RemoveAt(0);
-        totalSelected = selectedTileList.Count;
+        foreach (GameObject g in selectedTileList)
+        {
+            g.GetComponent<TileController>().selected = false;
+            g.GetComponent<SpriteRenderer>().color = g.GetComponent<TileController>().regularColor;
+        }
+        selectedTileList.Clear();
+        GameObject.Find("GameManager").GetComponent<GameManager>().totalTilesSelected = selectedTileList.Count;
     }
 
-    public static void PlaceLetter()
+    //Deslect specified selcted tile
+    private void ResetSelected(GameObject gameObj)
     {
-        GameObject tile = selectedTileList[0];
-        Debug.Log("Make Move Tile Name: " + tile.name);
-        GameObject.Find("GameManager").GetComponent<GameManager>().MakeMove(tile.transform.position, tile.transform.rotation);
+        gameObj.GetComponent<TileController>().selected = false;
+        gameObj.GetComponent<SpriteRenderer>().color = regularColor;
+        selectedTileList.Remove(gameObj);
+        gameManager.totalTilesSelected = selectedTileList.Count;
     }
 }
