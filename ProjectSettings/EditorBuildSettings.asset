@@ -5,7 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 97eed06b691113e41aec38f20a0f2f61
+  - enabled: 1
+    path: Assets/Scenes/Tic-Tac-Swap Main Scene.unity
+    guid: 3e7988d39a156364696a3856bbf1922a
   m_configObjects: {}

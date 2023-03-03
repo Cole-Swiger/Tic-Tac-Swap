@@ -5,6 +5,7 @@ using UnityEngine;
 public class ScoreLines : MonoBehaviour
 {
     GameManager gameManager;
+    //Keep track of circles and triangles in each row, column, and diagonal
     public List<GameObject> collidedCircleList;
     public List<GameObject> collidedTriangleList;
 
@@ -14,15 +15,9 @@ public class ScoreLines : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    //Add collided shape to appropriate list
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision detected");
         GameObject otherObject = collision.gameObject;
         if (otherObject.CompareTag("Letter"))
         {
@@ -34,9 +29,11 @@ public class ScoreLines : MonoBehaviour
                 collidedTriangleList.Add(otherObject);
             }
         }
+        //Tells the GameManager to calculate the game state
         gameManager.collisionsFinished = true;
     }
 
+    //When swapping, remove old object from list
     private void OnCollisionExit2D(Collision2D collision)
     {
         GameObject otherObject = collision.gameObject;
