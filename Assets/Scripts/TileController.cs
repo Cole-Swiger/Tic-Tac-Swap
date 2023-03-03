@@ -9,7 +9,7 @@ public class TileController : MonoBehaviour
     GameManager gameManager;
 
     //Tile colors
-    private Color highlightColor = Color.cyan;
+    private Color highlightColor = new(0.329f, 0.286f, 0.659f);
     private Color regularColor = Color.white;
     private Color unplayableColor = Color.gray;
 
@@ -21,6 +21,7 @@ public class TileController : MonoBehaviour
     public static int maxSelected = 1;
     public static List<GameObject> selectedTileList = new List<GameObject>();
 
+    //Used for game state in GameManager
     public int row;
     public int column;
 
@@ -54,7 +55,7 @@ public class TileController : MonoBehaviour
     //If swapping, 2 tiles can be selected before one is deselected.
     private void OnMouseDown()
     {
-        if (!isSelectable)
+        if (!isSelectable || gameManager.isGameOver)
         {
             return;
         }

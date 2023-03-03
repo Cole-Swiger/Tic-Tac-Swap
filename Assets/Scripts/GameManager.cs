@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -25,11 +27,17 @@ public class GameManager : MonoBehaviour
     public bool collisionsFinished = false;
 
     private GameObject[,] boardState = new GameObject[3, 3];
+    public bool isGameOver = false;
+    //Game Over screen/menu
+    private GameObject background;
 
     // Start is called before the first frame update
     void Start()
     {
         score = GameObject.FindGameObjectsWithTag("Line");
+        //Deactivate Game Over screen at start
+        background = GameObject.Find("Game Over Background");
+        background.SetActive(false);
     }
 
     // Update is called once per frame
@@ -40,6 +48,25 @@ public class GameManager : MonoBehaviour
         {
             UpdateGameState();
             collisionsFinished = false;
+        }
+
+        //Update UI to reflect current turn and game state
+        if (GetCurrentTurn().name.Equals("Circle"))
+        {
+            GameObject.Find("Turn Object").GetComponent<TextMeshProUGUI>().text = "Circle";
+        }
+        else
+        {
+            GameObject.Find("Turn Object").GetComponent<TextMeshProUGUI>().text = "Triangle";
+        }
+
+        if (isSwapActive)
+        {
+            GameObject.Find("Swap State").GetComponent<TextMeshProUGUI>().text = "Active";
+        }
+        else
+        {
+            GameObject.Find("Swap State").GetComponent<TextMeshProUGUI>().text = "Inactive";
         }
     }
 
@@ -78,15 +105,12 @@ public class GameManager : MonoBehaviour
     private void PlaceLetter(GameObject prefab, int tilePosition)
     {
         GameObject tile = TileController.selectedTileList[tilePosition];
-        Debug.Log("Tile position to be placed in: " + tile.GetComponent<TileController>().row + ", " + tile.GetComponent<TileController>().column);
-        Debug.Log("Prefab name: " + prefab.name);
         GameObject letter = Instantiate(prefab, tile.transform.position, tile.transform.rotation);
         letter.name = tile.name + "-" + prefab.name;
+
         tile.GetComponent<TileController>().isSelectable = false;
-        Debug.Log("Enter set board state");
         SetBoardState(letter);
         openTiles--;
-        Debug.Log("Finish Place letter");
     }
 
     //Swap contents of 2 occupied spaces
@@ -99,10 +123,8 @@ public class GameManager : MonoBehaviour
         {
             int tileRow = TileController.selectedTileList[(i + 1) % 2].GetComponent<TileController>().row;
             int tileColumn = TileController.selectedTileList[(i + 1) % 2].GetComponent<TileController>().column;
-            Debug.Log("Second letter position: " + tileRow + ", " + tileColumn);
             GameObject prefab = boardState[tileRow, tileColumn];
             prefab.name = prefab.name.Substring(prefab.name.LastIndexOf('-') + 1);
-            Debug.Log("Prefab Name to switch into current position: " + prefab.name);
             placeList.Add(prefab);
         }
 
@@ -121,8 +143,8 @@ public class GameManager : MonoBehaviour
         }
 
         tilesSwapped += 2;
-        //Counteract the 2 that are removed when calling PlaceLetter in the loop.
-        openTiles += 2;
+        openTiles += 2; //Counteract the 2 that are removed when calling PlaceLetter in the loop.
+
         //Set Swap mode to false and reset selected tiles.
         isSwapActive = false;
         SwapManager.SwapAllSelectable();
@@ -132,9 +154,18 @@ public class GameManager : MonoBehaviour
     public void SetMakeMoveActive()
     {
         bool isActive = (totalTilesSelected == maxSelected) ? true : false;
-        GameObject.Find("Make_Move_Button").GetComponent<MakeMoveController>().isActive = isActive;
+
+        if (isActive)
+        {
+            GameObject.Find("Make_Move").GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            GameObject.Find("Make_Move").GetComponent<Button>().interactable = false;
+        }
     }
 
+    //2D array is used to keep track of objects in tiles
     private void SetBoardState(GameObject placedLetter)
     {
         int row;
@@ -157,6 +188,7 @@ public class GameManager : MonoBehaviour
         boardState.SetValue(placedLetter, new int[] { row, column });
     }
 
+    //After letter is placed, update the game state to match current letter positions
     private void UpdateGameState()
     {
         //Check if move has created 3 in a row
@@ -175,32 +207,36 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log("Circle have 3 in a row? " + circleWinCondition);
-        Debug.Log("Triangle have 3 in a row? " + triangleWinCondition);
-
         currentTurn++;
         CheckGameState();
     }
 
+    //Check if a player has won or if the game is over.
    private void CheckGameState()
     {
-        Debug.Log("Checking Game State");
-        Debug.Log("Current turn: " + GetCurrentTurn().name);
-        Debug.Log("Tiles Swapped: " + tilesSwapped);
-        Debug.Log("Open Tiles: " + openTiles);
-
-        //Check if game is won
-        CheckEndOfGame(false);
-
         //If condition is met, then there are no available moves
         if (tilesSwapped == 8 && openTiles == 0)
         {
-            //See if previous move created a winning state for that player
-            currentTurn++;
-            CheckEndOfGame(true);
+            //For final move, rules are different. If both have 3 in a row, it's a tie, regardless of who's turn it is.
+            if (circleWinCondition && triangleWinCondition)
+            {
+                EndGame("Tie");
+            }
+
+            else
+            {
+                //See if previous move created a winning state for that player
+                currentTurn++;
+                CheckEndOfGame(true);
+            }
+            return;
         }
+
+        //Check if game is won on normal turn.
+        CheckEndOfGame(false);
     }
 
+    //After a move, check if the game is over
     private void CheckEndOfGame(bool noMoreMoves)
     {
         if (circleWinCondition && GetCurrentTurn().name.Contains("Circle"))
@@ -220,15 +256,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //Emd Game and display winner and Game Over menu
     private void EndGame(string winner)
     {
+        isGameOver = true;
+        background.SetActive(true);
         if (winner.Equals("Tie"))
         {
-            Debug.Log("It's a tie!");
+            GameObject.Find("Winner").GetComponent<TextMeshProUGUI>().text = "It's a Tie!";
         }
         else
         {
-            Debug.Log(winner + " wins!");
+            GameObject.Find("Winner").GetComponent<TextMeshProUGUI>().text = winner + " Wins!";
         }
+    }
+
+    //Reset Game to original state
+    public void ResetGame()
+    {
+        GameObject[] letters = GameObject.FindGameObjectsWithTag("Letter");
+        GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
+
+        //Destroy all placed letter
+        foreach (GameObject letter in letters)
+        {
+            Destroy(letter);
+        }
+
+        //Reset tiles
+        foreach (GameObject tile in tiles)
+        {
+            tile.GetComponent<TileController>().isSelectable = true;
+            tile.GetComponent<TileController>().hasBeenSwapped = false;
+        }
+
+        //Reset all values
+        currentTurn = 0;
+        isSwapActive = false;
+        tilesSwapped = 0;
+        openTiles = 9;
+        circleWinCondition = false;
+        triangleWinCondition = false;
+        isGameOver = false;
     }
 }

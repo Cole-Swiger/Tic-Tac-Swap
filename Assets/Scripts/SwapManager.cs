@@ -12,17 +12,10 @@ public class SwapManager : MonoBehaviour
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //Turns the Swap mode on and off and resets selected tiles.
-    private void OnMouseDown()
+    public void ToggleSwap()
     {
         gameManager.isSwapActive = !gameManager.isSwapActive;
-        Debug.Log("Swap Active: " + gameManager.isSwapActive);
         TileController.ResetAllSelected();
         SwapAllSelectable();
         gameManager.SetMakeMoveActive();
@@ -31,7 +24,6 @@ public class SwapManager : MonoBehaviour
     public static void SwapAllSelectable()
     {
         GameObject[] tiles = GameObject.FindGameObjectsWithTag("Tile");
-        Debug.Log("Number of tiles: " + tiles.Length);
 
         foreach (GameObject tile in tiles)
         {
