@@ -5,11 +5,14 @@ using UnityEngine;
 public class SwapManager : MonoBehaviour
 {
     GameManager gameManager;
+    private AudioSource swapAudio;
+    public AudioClip swapButton;
 
     // Start is called before the first frame update
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        swapAudio = GetComponent<AudioSource>();
     }
 
     //Turns the Swap mode on and off and resets selected tiles.
@@ -19,6 +22,7 @@ public class SwapManager : MonoBehaviour
         TileController.ResetAllSelected();
         SwapAllSelectable();
         gameManager.SetMakeMoveActive();
+        swapAudio.PlayOneShot(swapButton, 1);
     }
 
     public static void SwapAllSelectable()

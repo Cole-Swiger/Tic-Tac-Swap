@@ -25,12 +25,18 @@ public class TileController : MonoBehaviour
     public int row;
     public int column;
 
+    //Audio
+    private AudioSource tileAudio;
+    public AudioClip selectSound;
+    public AudioClip deselectSound;
+
     // Start is called before the first frame update
     void Start()
     {
         //Set Sprite renderer and GameManager
         sprite = gameObject.GetComponent<SpriteRenderer>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        tileAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -75,10 +81,12 @@ public class TileController : MonoBehaviour
             }
 
             sprite.color = highlightColor;
+            tileAudio.PlayOneShot(selectSound, 1);
         }
         else
         {
             ResetSelected(gameObject);
+            tileAudio.PlayOneShot(deselectSound, 1);
         }
         gameManager.SetMakeMoveActive();
     }
