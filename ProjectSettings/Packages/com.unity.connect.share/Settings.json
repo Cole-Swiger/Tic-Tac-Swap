@@ -2,6 +2,22 @@
     "m_Name": "Settings",
     "m_Path": "ProjectSettings/Packages/com.unity.connect.share/Settings.json",
     "m_Dictionary": {
-        "m_DictionaryValues": []
+        "m_DictionaryValues": [
+            {
+                "type": "System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "buildOutputDirList",
+                "value": "{\"m_Value\":\"C:/Users/Cole/Desktop/Create with Code/Tic-Tac-Swap/Builds/v1.2.1;C:/Users/Cole/Desktop/Create with Code/Tic-Tac-Swap/Builds/v1.2;C:/Users/Cole/Desktop/Create with Code/Tic-Tac-Swap/Builds/v1.1.1;C:/Users/Cole/Desktop/Create with Code/Tic-Tac-Swap/Builds/v1.1;C:/Users/Cole/Desktop/Create with Code/Tic-Tac-Swap/Builds;;;;;\"}"
+            },
+            {
+                "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "firstTime",
+                "value": "{\"m_Value\":false}"
+            },
+            {
+                "type": "System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089",
+                "key": "autoPublish",
+                "value": "{\"m_Value\":true}"
+            }
+        ]
     }
 }
