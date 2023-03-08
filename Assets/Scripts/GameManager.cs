@@ -14,9 +14,15 @@ public class GameManager : MonoBehaviour
     //Dictates the type of move being played
     public bool isSwapActive = false;
     //Determined by whether swap is active, 1 or 2
-    private int maxSelected;
+    private int maxSelected = 1;
     //Must = maxSelected for move to be made. Cannot be more than maxSelected
     public int totalTilesSelected { get; set; }
+
+    //Audio
+    private AudioSource gameAudio;
+    public AudioClip placeSound;
+    public AudioClip swapAction;
+    public AudioClip gameOver;
 
     //Game State and win conditions
     private GameObject[] score;
@@ -38,6 +44,8 @@ public class GameManager : MonoBehaviour
         //Deactivate Game Over screen at start
         background = GameObject.Find("Game Over Background");
         background.SetActive(false);
+
+        gameAudio = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -90,11 +98,13 @@ public class GameManager : MonoBehaviour
         if (isSwapActive)
         {
             Swap();
+            gameAudio.PlayOneShot(swapAction, 1);
         }
         else
         {
             GameObject prefab = GetCurrentTurn();
             PlaceLetter(prefab, 0);
+            gameAudio.PlayOneShot(placeSound, 1);
         }
         //Reset selected tiles after every turn and move turn count;
         TileController.ResetAllSelected();
@@ -269,6 +279,7 @@ public class GameManager : MonoBehaviour
         {
             GameObject.Find("Winner").GetComponent<TextMeshProUGUI>().text = winner + " Wins!";
         }
+        gameAudio.PlayOneShot(gameOver, 1);
     }
 
     //Reset Game to original state
