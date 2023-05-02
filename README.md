@@ -6,3 +6,7 @@ For example, if there is a circle in the top-left corner and a triangle in the m
 Once two pieces have been swapped, they cannot be swapped again. This new move also allows a player to stop a three-in-a-row from the other player after the play has been made. This means that the game doesn't end immediately on three-in-a-row.
 
 Published Game link: https://play.unity.com/mg/other/v1-2-1-mh
+
+Project Documentation:
+- Overview and Timeline: https://github.com/Cole-Swiger/Tic-Tac-Swap/blob/main/Tic%20Tac%20Swap%20Overview%20and%20Timeline.pdf
+- Design and Functionality: https://github.com/Cole-Swiger/Tic-Tac-Swap/blob/main/Tic-Tac-Swap%20Design.pdf
